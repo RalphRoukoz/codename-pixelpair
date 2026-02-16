@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class UIPanelGridGenerator : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private GridManager m_GridManager;
+    [SerializeField] private GameManager m_GameManager;
     
     [Header("UI Elements")]
     [SerializeField] private Button m_GenerateButton;
@@ -34,7 +34,7 @@ public class UIPanelGridGenerator : MonoBehaviour
 
     private void OnGenerateButtonPressed()
     {
-        m_GridManager.GenerateGrid(m_GridX, m_GridY);
+        m_GameManager.StartGame(m_GridX, m_GridY);
         gameObject.SetActive(false);
     }
 

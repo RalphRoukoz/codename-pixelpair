@@ -15,7 +15,7 @@ public class GridManager : MonoBehaviour
     
     private readonly List<Card> m_ActiveCards = new List<Card>();
 
-    public void GenerateGrid(int gridX, int gridY)
+    public void GenerateGrid(int gridX, int gridY, System.Action<Card> onSelected)
     {
         ClearGrid();
 
@@ -49,7 +49,7 @@ public class GridManager : MonoBehaviour
                 -(y * (cardScale + m_Spacing) - offset.y)
             );
 
-            card.Initialize(generatedSet[i]);
+            card.Initialize(generatedSet[i], onSelected);
         }
     }
 
@@ -97,5 +97,10 @@ public class GridManager : MonoBehaviour
             m_CardPool.Return(m_ActiveCards[i]);
 
         m_ActiveCards.Clear();
+    }
+    
+    public List<Card> GetActiveCards()
+    {
+        return m_ActiveCards;
     }
 }

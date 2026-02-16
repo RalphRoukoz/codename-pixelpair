@@ -24,6 +24,7 @@ public class CardPoolManager : MonoBehaviour
 
     public void Return(Card card)
     {
+        card.ResetState();
         card.gameObject.SetActive(false);
         m_Pool.Push(card);
     }

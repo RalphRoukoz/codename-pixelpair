@@ -49,6 +49,9 @@ public class GameManager : MonoBehaviour
     
     private void OnCardSelected(Card card)
     {
+        if (m_CurrentState != GameState.Playing)
+            return;
+        
         if (card.IsFlipped) return;
 
         card.Flip(true);

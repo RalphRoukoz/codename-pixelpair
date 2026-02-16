@@ -35,7 +35,6 @@ public class UIPanelGridGenerator : MonoBehaviour
     private void OnGenerateButtonPressed()
     {
         m_GameManager.StartGame(m_GridX, m_GridY);
-        gameObject.SetActive(false);
     }
 
     private void OnInputFieldXValueChanged(string gridX)

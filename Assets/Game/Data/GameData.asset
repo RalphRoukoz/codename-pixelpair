@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b360f557c2cc6ff4fb2c3fbc340ceee7, type: 3}
   m_Name: GameData
   m_EditorClassIdentifier: 
-  MatchTime: 0
+  MatchDuration: 30
+  ScoreMultiplier: 100
   Cards:
   - ID: 0
     Sprite: {fileID: 21300000, guid: c25e38dc83364e049b9ceb041a9ef8a0, type: 3}

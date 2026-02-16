@@ -5,7 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "GameData", menuName = "Data/GameData")]
 public class GameData : ScriptableObject
 {
-    public int MatchTime;
+    public int MatchDuration;
+    public int ScoreMultiplier;
     public List<CardData> Cards = new List<CardData>();
 }
 

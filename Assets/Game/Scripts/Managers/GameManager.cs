@@ -5,46 +5,78 @@ using DG.Tweening;
 
 public class GameManager : MonoBehaviour
 {
-    private readonly List<Card> selectedCards = new List<Card>(2);
-
+    private readonly List<Card> m_SelectedCards = new List<Card>(2);
+    private readonly Queue<(Card, Card)> m_ComparisonQueue = new Queue<(Card, Card)>();
+    
+    [Header("Manager References")]
     [SerializeField] private GridManager m_GridManager;
+    [SerializeField] private ScoreManager m_ScoreManager;
+    [SerializeField] private TimerManager m_TimerManager;
+    
+    [SerializeField] private GameData m_GameData;
+    
     [SerializeField] private float m_PreviewCardsDuration;
     
     private GameState m_CurrentState;
+    private int m_TotalPairs;
+    private int m_MatchedPairs;
+    
+    public System.Action<GameState> OnGameStateChanged;
+
+    private void Awake()
+    {
+        m_TimerManager.OnTimerEnd += HandleTimeUp;
+    }
+
+    private void Start()
+    {
+        SetGameState(GameState.Setup);
+        m_ScoreManager.SetScoreMultiplier(m_GameData.ScoreMultiplier);
+    }
+
+    private void OnDestroy()
+    {
+        m_TimerManager.OnTimerEnd -= HandleTimeUp;
+    }
 
     public void StartGame(int gridX, int gridY)
     {
-        m_CurrentState = GameState.Setup;
+        m_MatchedPairs = 0;
         
-        m_GridManager.GenerateGrid(gridX, gridY, OnCardSelected);
+        m_GridManager.GenerateGrid(gridX, gridY, OnCardSelected, out m_TotalPairs);
         
         StartPreviewSequence();
     }
     
     private void StartPreviewSequence()
     {
-        m_CurrentState = GameState.Preview;
-
+        SetGameState(GameState.Preview);
+        
         List<Card> cards = m_GridManager.GetActiveCards();
 
-        Sequence sequence = DOTween.Sequence();
+        Sequence previewSequence = DOTween.Sequence();
 
+        Sequence flipUpSequence = DOTween.Sequence();
         for (int i = 0; i < cards.Count; i++)
         {
-            sequence.Join(cards[i].FlipPreview(true));
+            flipUpSequence.Join(cards[i].FlipPreview(true));
         }
 
-        sequence.AppendInterval(m_PreviewCardsDuration);
-
+        Sequence flipDownSequence = DOTween.Sequence();
         for (int i = 0; i < cards.Count; i++)
         {
-            sequence.Join(cards[i].FlipPreview(false));
+            flipDownSequence.Join(cards[i].FlipPreview(false));
         }
 
-        sequence.OnComplete(() =>
-        {
-            m_CurrentState = GameState.Playing;
-        });
+        previewSequence
+            .Append(flipUpSequence)
+            .AppendInterval(m_PreviewCardsDuration)
+            .Append(flipDownSequence)
+            .OnComplete(() =>
+            {
+                SetGameState(GameState.Playing);
+                m_TimerManager.StartTimer(m_GameData.MatchDuration);
+            });
     }
     
     private void OnCardSelected(Card card)
@@ -56,20 +88,20 @@ public class GameManager : MonoBehaviour
 
         card.Flip(true);
 
-        selectedCards.Add(card);
+        m_SelectedCards.Add(card);
 
-        if (selectedCards.Count >= 2)
+        if (m_SelectedCards.Count >= 2)
         {
-            StartCoroutine(ProcessComparison());
+            m_ComparisonQueue.Enqueue((m_SelectedCards[0], m_SelectedCards[1]));
+            m_SelectedCards.Clear();
+
+            ProcessQueue();
         }
     }
 
-    private IEnumerator ProcessComparison()
+    private IEnumerator ProcessComparison(Card a, Card b)
     {
         yield return new WaitForSeconds(0.5f);
-        
-        Card a = selectedCards[0];
-        Card b = selectedCards[1];
 
         if (a != null && b != null)
         {
@@ -77,15 +109,54 @@ public class GameManager : MonoBehaviour
             {
                 a.SetMatched();
                 b.SetMatched();
+                m_MatchedPairs++;
+                m_ScoreManager.RegisterMatch();
+                
+                if (m_MatchedPairs >= m_TotalPairs)
+                {
+                    HandleVictory();
+                }
             }
             else
             {
                 a.Flip(false);
                 b.Flip(false);
+                m_ScoreManager.RegisterMiss();
             }
-            
-            selectedCards.Clear();
+
+            ProcessQueue();
         }
+    }
+    
+    private void SetGameState(GameState state)
+    {
+        m_CurrentState = state;
+        OnGameStateChanged?.Invoke(m_CurrentState);
+    }
+    
+    private void HandleTimeUp()
+    {
+        if (m_CurrentState != GameState.Playing)
+            return;
+
+        SetGameState(GameState.GameOver);
+    }
+
+    private void HandleVictory()
+    {
+        SetGameState(GameState.Victory);
+        m_TimerManager.StopTimer();
+        m_ScoreManager.ResetScore();
+    }
+    
+    private void ProcessQueue()
+    {
+        if (m_ComparisonQueue.Count == 0)
+            return;
+
+        (Card, Card) pair = m_ComparisonQueue.Dequeue();
+        
+        StartCoroutine(ProcessComparison(pair.Item1, pair.Item2));
     }
 }
 
@@ -94,5 +165,6 @@ public enum GameState
     Setup,
     Preview,
     Playing,
+    Victory,
     GameOver
 }

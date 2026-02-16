@@ -15,12 +15,13 @@ public class GridManager : MonoBehaviour
     
     private readonly List<Card> m_ActiveCards = new List<Card>();
 
-    public void GenerateGrid(int gridX, int gridY, System.Action<Card> onSelected)
+    public void GenerateGrid(int gridX, int gridY, System.Action<Card> onSelected, out int totalPairs)
     {
         ClearGrid();
 
         int total = gridX * gridY;
-
+        totalPairs = total / 2;
+        
         m_CardPool.Prewarm(total);
 
         List<CardData> generatedSet = GenerateCardSet(total);

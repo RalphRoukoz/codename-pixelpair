@@ -1,48 +1,53 @@
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
-public class TimerManager : MonoBehaviour
+namespace Game.Scripts.Managers
 {
-    [SerializeField] private TMP_Text m_TimerText;
-
-    private float m_TimeRemaining;
-    private bool m_IsRunning;
-
-    public System.Action OnTimerEnd;
-
-    public void StartTimer(int duration)
+    public class TimerManager : MonoBehaviour
     {
-        m_TimeRemaining = duration;
-        m_IsRunning = true;
-        UpdateUI();
-    }
+        public float TimeRemaining => m_TimeRemaining;
+        
+        [SerializeField] private TMP_Text m_TimerText;
 
-    public void StopTimer()
-    {
-        m_IsRunning = false;
-    }
+        private float m_TimeRemaining;
+        private bool m_IsRunning;
 
-    private void Update()
-    {
-        if (!m_IsRunning) return;
+        public System.Action OnTimerEnd;
 
-        m_TimeRemaining -= Time.deltaTime;
-
-        if (m_TimeRemaining <= 0f)
+        public void StartTimer(float duration)
         {
-            m_TimeRemaining = 0f;
-            m_IsRunning = false;
+            m_TimeRemaining = duration;
+            m_IsRunning = true;
             UpdateUI();
-            OnTimerEnd?.Invoke();
-            return;
         }
 
-        UpdateUI();
-    }
+        public void StopTimer()
+        {
+            m_IsRunning = false;
+        }
 
-    private void UpdateUI()
-    {
-        int seconds = Mathf.CeilToInt(m_TimeRemaining);
-        m_TimerText.text = seconds.ToString();
+        private void Update()
+        {
+            if (!m_IsRunning) return;
+
+            m_TimeRemaining -= Time.deltaTime;
+
+            if (m_TimeRemaining <= 0f)
+            {
+                m_TimeRemaining = 0f;
+                m_IsRunning = false;
+                UpdateUI();
+                OnTimerEnd?.Invoke();
+                return;
+            }
+
+            UpdateUI();
+        }
+
+        private void UpdateUI()
+        {
+            int seconds = Mathf.CeilToInt(m_TimeRemaining);
+            m_TimerText.text = seconds.ToString();
+        }
     }
 }

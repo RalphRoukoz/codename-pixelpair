@@ -1,44 +1,48 @@
 using UnityEngine;
 
-public class UIManager : MonoBehaviour
+namespace Game.Scripts.Managers
 {
-    [SerializeField] private GameManager m_GameManager;
-
-    [SerializeField] private GameObject m_GridGeneratorPanel;
-    [SerializeField] private GameObject m_MatchPanel;
-    private void Awake()
+    public class UIManager : MonoBehaviour
     {
-        m_GameManager.OnGameStateChanged += OnGameStateChanged;
-    }
+        [SerializeField] private GameManager m_GameManager;
 
-    private void OnDestroy()
-    {
-        m_GameManager.OnGameStateChanged -= OnGameStateChanged;
-    }
-
-    private void OnGameStateChanged(GameState gameState)
-    {
-        switch (gameState)
+        [SerializeField] private GameObject m_GridGeneratorPanel;
+        [SerializeField] private GameObject m_MatchPanel;
+        private void Awake()
         {
-            case GameState.Setup:
-                m_GridGeneratorPanel.SetActive(true);
-                m_MatchPanel.SetActive(false);
-                break;
+            m_GameManager.OnGameStateChanged += OnGameStateChanged;
+        }
+
+        private void OnDestroy()
+        {
+            m_GameManager.OnGameStateChanged -= OnGameStateChanged;
+        }
+
+        private void OnGameStateChanged(GameState gameState)
+        {
+            switch (gameState)
+            {
+                case GameState.Setup:
+                    m_GridGeneratorPanel.SetActive(true);
+                    m_MatchPanel.SetActive(false);
+                    break;
             
-            case GameState.Preview:
-                m_GridGeneratorPanel.SetActive(false);
-                m_MatchPanel.SetActive(false);
-                break;
+                case GameState.Preview:
+                    m_GridGeneratorPanel.SetActive(false);
+                    m_MatchPanel.SetActive(false);
+                    break;
             
-            case GameState.Playing:
-                m_MatchPanel.SetActive(true);
-                break;
+                case GameState.Playing:
+                    m_MatchPanel.SetActive(true);
+                    m_GridGeneratorPanel.SetActive(false);
+                    break;
             
-            case GameState.Victory:
-            case GameState.GameOver:
-                m_GridGeneratorPanel.SetActive(true);
-                m_MatchPanel.SetActive(false);
-                break;
+                case GameState.Victory:
+                case GameState.GameOver:
+                    m_GridGeneratorPanel.SetActive(true);
+                    m_MatchPanel.SetActive(false);
+                    break;
+            }
         }
     }
 }

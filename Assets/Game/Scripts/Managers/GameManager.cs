@@ -140,7 +140,7 @@ namespace Game.Scripts.Managers
                 
                     if (m_MatchedPairs >= m_TotalPairs)
                     {
-                        HandleVictory();
+                        StartCoroutine(HandleVictory());
                     }
                     m_AudioManager.PlayMatch();
                 }
@@ -171,12 +171,15 @@ namespace Game.Scripts.Managers
             SetGameState(GameState.GameOver);
         }
 
-        private void HandleVictory()
+        private IEnumerator HandleVictory()
         {
-            SetGameState(GameState.Victory);
             m_TimerManager.StopTimer();
-            m_ScoreManager.ResetScore();
             SaveLoadSystem.ClearSave();
+            
+            yield return new WaitForSeconds(0.5f);
+            
+            SetGameState(GameState.Victory);
+            m_ScoreManager.ResetScore();
         }
     
         private void ProcessQueue()

@@ -28,6 +28,7 @@ namespace Game.Scripts.Managers
         {
             m_Score = 0;
             m_ComboCounter = 0;
+            m_ScoreText.text = $"Score: {m_Score}";
         }
 
         public void SetScoreMultiplier(int value)

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b360f557c2cc6ff4fb2c3fbc340ceee7, type: 3}
   m_Name: GameData
   m_EditorClassIdentifier: 
-  MatchDuration: 500
+  MatchDuration: 150
   ScoreMultiplier: 100
   Cards:
   - ID: 0

@@ -12,8 +12,8 @@ namespace Game.Scripts.Managers
         [SerializeField] private GameData m_GameData;
     
         [Header("Grid Settings")]
-        [SerializeField] private int m_MaxGridSizeX = 100;
-        [SerializeField] private int m_MaxGridSizeY = 100;
+        [SerializeField] private int m_MaxGridSizeX;
+        [SerializeField] private int m_MaxGridSizeY;
         [SerializeField] private float m_Spacing = 0.2f;
     
         private readonly List<Card> m_ActiveCards = new List<Card>();

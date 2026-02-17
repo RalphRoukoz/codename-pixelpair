@@ -15,9 +15,10 @@ namespace Game.Scripts.Managers
         private int m_Score;
         private int m_ComboCounter;
         private int m_ScoreMultiplier;
+        private float m_FadeOutDelay = 1f;
+        
         private Tween m_FadeTween;
         private Tween m_PunchTween;
-        private float m_FadeOutDelay = 1f;
 
         private void Start()
         {

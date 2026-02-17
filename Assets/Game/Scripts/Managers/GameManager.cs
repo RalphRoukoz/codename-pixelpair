@@ -77,13 +77,6 @@ namespace Game.Scripts.Managers
             List<Card> cards = m_GridManager.GetActiveCards();
 
             Sequence previewSequence = DOTween.Sequence();
-
-            Sequence flipUpSequence = DOTween.Sequence();
-            for (int i = 0; i < cards.Count; i++)
-            {
-                flipUpSequence.Join(cards[i].FlipPreview(true));
-            }
-        
             Sequence flipDownSequence = DOTween.Sequence();
             flipDownSequence.OnStart(() => {m_AudioManager.PlayFlip();});
             for (int i = 0; i < cards.Count; i++)
@@ -92,7 +85,6 @@ namespace Game.Scripts.Managers
             }
         
             previewSequence
-                .Append(flipUpSequence)
                 .AppendInterval(m_PreviewCardsDuration)
                 .Append(flipDownSequence)
                 .OnComplete(() => { OnPreviewComplete(loadedMatch); });

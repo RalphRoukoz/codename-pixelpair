@@ -59,6 +59,7 @@ namespace Game.Scripts
             if (m_FlipTween != null && m_FlipTween.IsActive())
                 m_FlipTween.Kill();
         
+            m_CardTransform.rotation = Quaternion.Euler(0f, 0f, 0f);
             IsFlipped = false;
             IsMatched = false;
             m_Animator?.SetBool(m_AnimFlipped, IsFlipped);
@@ -76,6 +77,7 @@ namespace Game.Scripts
         public void SetMatchedStateImmediate()
         {
             IsMatched = true;
+            IsFlipped = true;
             gameObject.SetActive(false);
         }
 

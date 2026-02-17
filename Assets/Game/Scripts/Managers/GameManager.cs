@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GridManager m_GridManager;
     [SerializeField] private ScoreManager m_ScoreManager;
     [SerializeField] private TimerManager m_TimerManager;
+    [SerializeField] private AudioManager m_AudioManager;
     
     [SerializeField] private GameData m_GameData;
     
@@ -61,13 +62,14 @@ public class GameManager : MonoBehaviour
         {
             flipUpSequence.Join(cards[i].FlipPreview(true));
         }
-
+        
         Sequence flipDownSequence = DOTween.Sequence();
+        flipDownSequence.OnStart(() => {m_AudioManager.PlayFlip();});
         for (int i = 0; i < cards.Count; i++)
         {
             flipDownSequence.Join(cards[i].FlipPreview(false));
         }
-
+        
         previewSequence
             .Append(flipUpSequence)
             .AppendInterval(m_PreviewCardsDuration)
@@ -87,7 +89,8 @@ public class GameManager : MonoBehaviour
         if (card.IsFlipped) return;
 
         card.Flip(true);
-
+        m_AudioManager.PlayFlip();
+        
         m_SelectedCards.Add(card);
 
         if (m_SelectedCards.Count >= 2)
@@ -116,12 +119,14 @@ public class GameManager : MonoBehaviour
                 {
                     HandleVictory();
                 }
+                m_AudioManager.PlayMatch();
             }
             else
             {
                 a.Flip(false);
                 b.Flip(false);
                 m_ScoreManager.RegisterMiss();
+                m_AudioManager.PlayMismatch();
             }
 
             ProcessQueue();
@@ -139,6 +144,7 @@ public class GameManager : MonoBehaviour
         if (m_CurrentState != GameState.Playing)
             return;
 
+        m_AudioManager.PlayGameOver();
         SetGameState(GameState.GameOver);
     }
 
